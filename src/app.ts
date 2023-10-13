@@ -5,6 +5,7 @@ import {createTerminus} from "@godaddy/terminus";
 import fs from "fs";
 import * as actualAPI from "@actual-app/api";
 import express from "express";
+import axios from 'axios';
 
 import Ajv, {JSONSchemaType} from "ajv"
 import addFormats from "ajv-formats"
@@ -24,6 +25,14 @@ const env = envalid.cleanEnv(process.env, {
     ACTUAL_SERVER_PORT: envalid.port(),
     ACTUAL_SERVER_PASSWORD: envalid.str(),
     ACTUAL_SERVER_BUDGET_ID: envalid.str(),
+    MAIN_CURRENCY: envalid.str({
+        default: "egp",
+        desc: "Main currency to use. Will do currency conversion for any transactions that are not in the main currency. Should be a 3 letter lowercase value"
+    }),
+    FOREIGN_CURRENCY_FACTOR: envalid.num({
+        default: 1.1,
+        desc: "Factor for transactions that are not done in the MAIN_CURRENCY value. Default is 10%"
+    }),
     NODE_ENV: envalid.str({choices: ['development', 'test', 'production', 'staging']}),
 });
 
@@ -44,13 +53,6 @@ const env = envalid.cleanEnv(process.env, {
 
     // This is the ID from Settings → Show advanced settings → Sync ID
     await actualAPI.downloadBudget(env.ACTUAL_SERVER_BUDGET_ID);
-    // await actualAPI.importTransactions("62fc2ba4-f047-4d5d-98f9-7dc088481b5a", [{
-    //     date: "2023-10-10",
-    //     amount: actualAPI.utils.amountToInteger(500.2),
-    //     notes: "This is a note",
-    //     payee_name: "Adidas"
-    // }])
-    // await actualAPI.shutdown();
 })();
 
 interface RequestPayload {
@@ -80,31 +82,52 @@ app.post('/transactions', async (req, res) => {
         return res.status(403).send({"errors": validate.errors})
     }
     if (env.API_KEY !== req.body.api_key) {
-        return res.send(401)
+        return res.sendStatus(401)
     }
-
 
     // Attempt to parse SMS
     let transactionData = null
     try {
         transactionData = parseSMS(req.body.sms_sender, req.body.sms)
     } catch (e) {
-        return res.send(401)
+        return res.sendStatus(401)
     }
 
-    // Convert to EGP if foreign currency
-    // Use API found here
-    // Have in a try / catch to avoid issues
+    if (transactionData.currency && transactionData.currency.toLowerCase() !== env.MAIN_CURRENCY) {
+        for (const date of [transactionData.date, "latest"]) {
+            try {
+                const currencyResponse = await axios.get(`https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/${date}/currencies/${transactionData.currency.toLowerCase()}/${env.MAIN_CURRENCY}.json`)
+                const data = currencyResponse.data
+                // Calculated the amount in the main currency
+                const convertedAmount = data[env.MAIN_CURRENCY] * transactionData.amount * env.FOREIGN_CURRENCY_FACTOR
+
+                // Add a note of the original amount in the foreign currency
+                const foreignCurrencyString = `${transactionData.amount} ${transactionData.currency}`
+                transactionData.notes = transactionData.notes ? `${transactionData.notes} - ${foreignCurrencyString}` : foreignCurrencyString
+
+                // Adjust the transaction amount to be in the main currency
+                transactionData.amount = convertedAmount
+                break
+            } catch (err: unknown) {
+                if (axios.isAxiosError(err)) {
+                    console.warn(`Error when using currency conversion API. Date: ${date} - Amount: ${transactionData.amount} ${transactionData.currency}})`)
+                } else {
+                    console.error(err)
+                }
+            }
+        }
+    }
 
     // Run actual import of transaction
     await actualAPI.importTransactions(transactionData.account, [{
         date: transactionData.date,
         payee_name: transactionData.payee_name,
-        amount: actualAPI.utils.amountToInteger(transactionData.amount),
-        notes: transactionData.notes
+        amount: actualAPI.utils.amountToInteger(transactionData.amount) * (transactionData.type == "outflow" ? -1 : 1),
+        notes: transactionData.notes,
+        cleared: transactionData.cleared
     }])
 
-    return res.send(201)
+    return res.sendStatus(201)
 })
 
 // Setting up the server
