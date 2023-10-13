@@ -1,0 +1,13 @@
+POST http://localhost:8080/transactions
+Content-Type: application/json
+
+{
+  "api_key": "random",
+  "currency": "EGP",
+  "account": "62fc2ba4-f047-4d5d-98f9-7dc088481b5a",
+  "date": "2023-10-10",
+  "amount": 500.2,
+  "payee_name": "ABC123"
+}
+
+###
