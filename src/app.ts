@@ -6,15 +6,16 @@ import fs from "fs";
 import * as actualAPI from "@actual-app/api";
 import express from "express";
 
-const Ajv = require("ajv").default
+import Ajv, {JSONSchemaType} from "ajv"
+
 const ajv = new Ajv()
 const app = express()
-const pino = require('pino-http')()
-const port = 8080
 const actualBudgetDataDir = './budget-data'
 
+// Setup of environment variables
 const env = envalid.cleanEnv(process.env, {
     API_KEY: envalid.str(),
+    SERVER_PORT: envalid.port({default: 80}),
     ACTUAL_SERVER_PROCTOCOL: envalid.str({choices: ["http", "https"], default: "https"}),
     ACTUAL_SERVER_HOST: envalid.host(),
     ACTUAL_SERVER_PORT: envalid.port(),
@@ -23,7 +24,7 @@ const env = envalid.cleanEnv(process.env, {
     NODE_ENV: envalid.str({choices: ['development', 'test', 'production', 'staging']}),
 });
 
-
+// Initialize ActualAPI
 (async () => {
     if (!fs.existsSync(actualBudgetDataDir)) {
         fs.mkdirSync(actualBudgetDataDir);
@@ -45,25 +46,29 @@ const env = envalid.cleanEnv(process.env, {
     await actualAPI.shutdown();
 })();
 
+interface MyData {
+    foo: number
+    bar?: string
+}
+
 // Compile AJV
-const schema = {
+const schema: JSONSchemaType<MyData> = {
     type: "object",
     properties: {
-        api_key: {type: "string"},
-        amount: {type: "integer"},
-        currency: {type: "string"},
-        bar: {type: "string"}
+        foo: {type: "integer"},
+        bar: {type: "string", nullable: true}
     },
     required: ["foo"],
     additionalProperties: false
 }
 const validate = ajv.compile(schema)
 
-app.use(pino)
 app.use(express.json());
 app.post('/', async (req, res) => {
     // Check API key from request
-    // req.log.info("Nice!")
+    validate(req.body)
+    console.log(req)
+    res.status(201)
 })
 
 // Setting up the server
@@ -83,4 +88,4 @@ createTerminus(server, {
     onSignal
 })
 
-server.listen(port)
+server.listen(env.SERVER_PORT, () => console.log(`Starting Actual Budget Transactions Proxy Server on Port ${env.SERVER_PORT}`))
