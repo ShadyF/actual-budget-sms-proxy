@@ -29,12 +29,13 @@ const configSchema: JSONSchemaType<Record<string, TransactionParser[]>> = {
                 type: "object",
                 properties: {
                     "regex": {type: "string", format: "regex"},
-                    "account": {type: "string", format: "uuid"},
+                    "account": {type: "string"},
+                    "to_account": {type: "string", nullable: true},
                     "type": {type: "string", enum: ["inflow", "outflow"]},
-                    "appendYearPrefix": {type: "boolean"},
+                    "append_year_prefix": {type: "boolean"},
                     "cleared": {type: "boolean"}
                 },
-                required: ['regex', 'account', "type", "appendYearPrefix", "cleared"],
+                required: ['regex', 'account', "type", "append_year_prefix", "cleared"],
                 additionalProperties: false,
             }
         }

@@ -2,7 +2,8 @@ export interface TransactionData {
     account: string
     date: string
     amount: number
-    payee_name: string
+    to_account?: string
+    payee_name?: string
     type: "inflow" | "outflow"
     cleared: boolean
     currency?: string
@@ -12,8 +13,9 @@ export interface TransactionData {
 export interface TransactionParser {
     regex: string,
     account: string
+    to_account?: string
     type: "inflow" | "outflow"
-    appendYearPrefix: boolean
+    append_year_prefix: boolean
     cleared: boolean
 }
 
@@ -30,11 +32,12 @@ export const parseSMS = (senderName: string, body: string, config: Record<string
     for (const parser of senderTParsers) {
         const matches = body.match(new RegExp(parser.regex, "i"))
         if (matches && matches.groups?.year && matches.groups?.day && matches.groups?.month && matches.groups?.amount) {
-            const date = `${parser.appendYearPrefix ? "20" : ""}${matches.groups.year}-${matches.groups.month}-${matches.groups.day}`
+            const date = `${parser.append_year_prefix ? "20" : ""}${matches.groups.year}-${matches.groups.month}-${matches.groups.day}`
             transaction = {
                 account: parser.account,
                 date: date,
                 amount: parseFloat(matches.groups?.amount),
+                to_account: parser.to_account,
                 payee_name: matches.groups?.payee_name,
                 type: parser.type,
                 cleared: parser.cleared,

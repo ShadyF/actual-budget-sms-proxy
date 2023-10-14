@@ -6,10 +6,27 @@ import fs from "fs";
 import * as actualAPI from "@actual-app/api";
 import express from "express";
 import axios from 'axios';
-import {parseSMS, TransactionParser} from "./parser";
+import {parseSMS, TransactionData, TransactionParser} from "./parser";
 import {configValidator, payloadValidator} from "./validators";
 
 const actualBudgetDataDir = './budget-data'
+
+let accountsList: Account[] = []
+let transferAccountsList: TransferAccount[] = []
+
+interface TransferAccount {
+    id: string
+    name: string,
+    category: string | null,
+    transfer_acct: string | null
+}
+
+interface Account {
+    id: string
+    name: string
+    offbudget: boolean
+    closed: boolean
+}
 
 // Setup of environment variables
 const env = envalid.cleanEnv(process.env, {
@@ -57,7 +74,17 @@ if (!configValidator(config)) {
     });
 
     // This is the ID from Settings → Show advanced settings → Sync ID
+    console.log("Downloading Budget...")
     await actualAPI.downloadBudget(env.ACTUAL_SERVER_BUDGET_ID);
+
+    // Pull account IDs
+    console.log("Pulling Account IDs...")
+    accountsList = await actualAPI.getAccounts()
+    // Pull account transfer ids
+    console.log("Pulling Accounts Transfer IDs...")
+    const payees: TransferAccount[] = await actualAPI.getPayees()
+    transferAccountsList = payees.filter((payee) => payee.transfer_acct != null)
+    console.log("Initialization Done!")
 })();
 
 
@@ -78,7 +105,7 @@ app.post('/transactions', async (req, res) => {
     }
 
     // Attempt to parse SMS
-    let transactionData = null
+    let transactionData: TransactionData | null = null
     try {
         transactionData = parseSMS(req.body.sms_sender, req.body.sms, config)
     } catch (err: unknown) {
@@ -115,9 +142,24 @@ app.post('/transactions', async (req, res) => {
         }
     }
 
+
+    // Convert accounts names to IDs
+    const accountId = accountsList.find((account) => account.name === transactionData?.account)?.id
+    if (!accountId) {
+        console.warn(`Could not find ID of account named ${transactionData.account}. Please make sure the account name in your config matches the account name in Actual Budget.`)
+    }
+    let toAccountId = null
+    if (transactionData.to_account) {
+        toAccountId = transferAccountsList.find((account) => account.name === transactionData?.to_account)?.id
+        if (!toAccountId) {
+            console.warn(`Could not find ID of account named ${transactionData.to_account}. Please make sure the account name in your config matches the account name in Actual Budget.`)
+        }
+    }
+
     // Run actual import of transaction
-    await actualAPI.importTransactions(transactionData.account, [{
+    await actualAPI.importTransactions(accountId, [{
         date: transactionData.date,
+        payee: toAccountId,
         payee_name: transactionData.payee_name,
         amount: actualAPI.utils.amountToInteger(transactionData.amount) * (transactionData.type == "outflow" ? -1 : 1),
         notes: transactionData.notes,
