@@ -1,0 +1,29 @@
+# Adapted from https://github.com/adrenak/upm-template/blob/master/.github/workflows/ci.yml
+# https://github.com/marketplace/actions/action-for-semantic-release
+name: Release
+
+on:
+  push:
+    branches:
+      - 'main'
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          # Follow the steps outlined here https://medium.com/prompt/trigger-another-github-workflow-without-using-a-personal-access-token-f594c21373ef
+          # Needed to allow tags pushed by this workflow to trigger other workflows.
+          ssh-key: "${{ secrets.COMMIT_KEY }}"
+
+      - name: Semantic Release
+        id: semantic
+        uses: cycjimmy/semantic-release-action@v4
+        with:
+          extra_plugins: |
+            @semantic-release/changelog
+            @semantic-release/git
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
