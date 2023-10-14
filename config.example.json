@@ -1,0 +1,27 @@
+{
+  "Sender 1": [
+    {
+      "account": "8f121907-9cdb-495a-9a95-d46f3f5a0d60",
+      "regex": "Your credit card#[\\d{4}]+ was charged for (?<currency>\\w{3}) (?<amount>\\d+.\\d+) at (?<payee_name>.+) on (?<year>\\d\\d)-(?<month>\\d\\d)-(?<day>\\d\\d)",
+      "type": "outflow",
+      "appendYearPrefix": true,
+      "cleared": false
+    },
+    {
+      "account": "7f4ed6eb-0d7e-4f4c-ade0-4b5afa1c7647",
+      "regex": "Your debit card ending with #[\\d{4}]+ was charged for (?<currency>\\w{3}) (?<amount>\\d+.\\d+) at (?<payee_name>.+) on (?<year>\\d\\d)-(?<month>\\d\\d)-(?<day>\\d\\d)",
+      "type": "outflow",
+      "appendYearPrefix": true,
+      "cleared": false
+    }
+  ],
+  "Sender 2": [
+    {
+      "account": "f5f2526d-e30d-4408-b5fd-fcccf294a3dc",
+      "regex": "From Sender 1: Your Credit Card ending with ***[\\d{4}]+ has been used for (?<currency>\\w{3}) (?<amount>\\d+.\\d+) on (?<day>\\d\\d)\\(?<month>\\d\\d)\\(?<year>\\d\\d) at (?<payee_name>.+). Your available limit is",
+      "type": "outflow",
+      "appendYearPrefix": false,
+      "cleared": false
+    }
+  ]
+}

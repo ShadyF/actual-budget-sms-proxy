@@ -1,5 +1,3 @@
-import {financialEntities} from "./config";
-
 export interface TransactionData {
     account: string
     date: string
@@ -11,21 +9,26 @@ export interface TransactionData {
     notes?: string
 }
 
-export interface Parser {
+export interface TransactionParser {
+    regex: string,
     account: string
-    regex: RegExp,
     type: "inflow" | "outflow"
     appendYearPrefix: boolean
     cleared: boolean
 }
 
 
-export const parseSMS = (smsSender: string, sms: string): TransactionData => {
-    const parsers = financialEntities[smsSender]
+export const parseSMS = (senderName: string, body: string, config: Record<string, TransactionParser[]>): TransactionData => {
+    if (!(senderName in config)) {
+        // TODO: Replace this with a more meaningful type of error
+        throw Error("Could not find SMS Sender in provided financial entities config.")
+    }
+
+    const senderTParsers = config[senderName]
 
     let transaction: TransactionData | null = null
-    for (const parser of parsers) {
-        const matches = sms.match(parser.regex)
+    for (const parser of senderTParsers) {
+        const matches = body.match(new RegExp(parser.regex, "i"))
         if (matches && matches.groups?.year && matches.groups?.day && matches.groups?.month && matches.groups?.amount) {
             const date = `${parser.appendYearPrefix ? "20" : ""}${matches.groups.year}-${matches.groups.month}-${matches.groups.day}`
             transaction = {

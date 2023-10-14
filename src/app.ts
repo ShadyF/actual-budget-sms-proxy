@@ -6,14 +6,9 @@ import fs from "fs";
 import * as actualAPI from "@actual-app/api";
 import express from "express";
 import axios from 'axios';
+import {parseSMS, TransactionParser} from "./parser";
+import {configValidator, payloadValidator} from "./validators";
 
-import Ajv, {JSONSchemaType} from "ajv"
-import addFormats from "ajv-formats"
-import {parseSMS} from "./parser";
-
-const ajv = new Ajv()
-addFormats(ajv, ["date", "uuid"])
-const app = express()
 const actualBudgetDataDir = './budget-data'
 
 // Setup of environment variables
@@ -25,6 +20,7 @@ const env = envalid.cleanEnv(process.env, {
     ACTUAL_SERVER_PORT: envalid.port(),
     ACTUAL_SERVER_PASSWORD: envalid.str(),
     ACTUAL_SERVER_BUDGET_ID: envalid.str(),
+    CONFIG_FILE_PATH: envalid.str({default: "./config.json"}),
     MAIN_CURRENCY: envalid.str({
         default: "egp",
         desc: "Main currency to use. Will do currency conversion for any transactions that are not in the main currency. Should be a 3 letter lowercase value"
@@ -34,7 +30,15 @@ const env = envalid.cleanEnv(process.env, {
         desc: "Factor for transactions that are not done in the MAIN_CURRENCY value. Default is 10%"
     }),
     NODE_ENV: envalid.str({choices: ['development', 'test', 'production', 'staging']}),
-});
+})
+
+// Parse config file
+const config: Record<string, TransactionParser[]> = JSON.parse(fs.readFileSync(env.CONFIG_FILE_PATH, 'utf8'))
+if (!configValidator(config)) {
+    console.error(configValidator.errors)
+    throw Error(`Error when parsing config.`)
+}
+
 
 // Initialize ActualAPI
 (async () => {
@@ -55,31 +59,18 @@ const env = envalid.cleanEnv(process.env, {
     await actualAPI.downloadBudget(env.ACTUAL_SERVER_BUDGET_ID);
 })();
 
-interface RequestPayload {
+
+export interface RequestPayload {
     api_key: string
     sms_sender: string
     sms: string
 }
 
-// Compile AJV
-const schema: JSONSchemaType<RequestPayload> = {
-    type: "object",
-    properties: {
-        api_key: {type: "string"},
-        sms_sender: {type: "string"},
-        sms: {type: "string"}
-    },
-    required: ["api_key", "sms_sender", "sms"],
-    additionalProperties: false
-}
-
-const validate = ajv.compile(schema)
-
-
+const app = express()
 app.use(express.json());
 app.post('/transactions', async (req, res) => {
-    if (!validate(req.body)) {
-        return res.status(403).send({"errors": validate.errors})
+    if (!payloadValidator(req.body)) {
+        return res.status(403).send({"errors": payloadValidator.errors})
     }
     if (env.API_KEY !== req.body.api_key) {
         return res.sendStatus(401)
@@ -88,11 +79,16 @@ app.post('/transactions', async (req, res) => {
     // Attempt to parse SMS
     let transactionData = null
     try {
-        transactionData = parseSMS(req.body.sms_sender, req.body.sms)
-    } catch (e) {
-        return res.sendStatus(401)
+        transactionData = parseSMS(req.body.sms_sender, req.body.sms, config)
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            return res.status(400).send({"errors": err.message})
+        }
+        console.error("Uncaught error " + err)
+        return res.sendStatus(400)
     }
 
+    // Convert foreign currency to main currency
     if (transactionData.currency && transactionData.currency.toLowerCase() !== env.MAIN_CURRENCY) {
         for (const date of [transactionData.date, "latest"]) {
             try {
