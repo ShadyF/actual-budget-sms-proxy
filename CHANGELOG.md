@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/ShadyF/Actual-Budget-SMS-Proxy/compare/v1.0.0...v1.0.1) (2023-10-14)
+
+
+### Bug Fixes
+
+* **server:** change default server port to be 8080 ([b70241b](https://github.com/ShadyF/Actual-Budget-SMS-Proxy/commit/b70241bfc0b9d07f584915ec2e53a0942e645792))
+
 # 1.0.0 (2023-10-14)
 
 
