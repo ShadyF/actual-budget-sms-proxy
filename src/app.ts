@@ -14,7 +14,7 @@ const actualBudgetDataDir = './budget-data'
 // Setup of environment variables
 const env = envalid.cleanEnv(process.env, {
     API_KEY: envalid.str(),
-    SERVER_PORT: envalid.port({default: 80}),
+    SERVER_PORT: envalid.port({default: 8080}),
     ACTUAL_SERVER_PROCTOCOL: envalid.str({choices: ["http", "https"], default: "https"}),
     ACTUAL_SERVER_HOST: envalid.host(),
     ACTUAL_SERVER_PORT: envalid.port(),
@@ -25,6 +25,7 @@ const env = envalid.cleanEnv(process.env, {
         default: "egp",
         desc: "Main currency to use. Will do currency conversion for any transactions that are not in the main currency. Should be a 3 letter lowercase value"
     }),
+    // TODO: Move this to be per account / parser not global
     FOREIGN_CURRENCY_FACTOR: envalid.num({
         default: 1.1,
         desc: "Factor for transactions that are not done in the MAIN_CURRENCY value. Default is 10%"
