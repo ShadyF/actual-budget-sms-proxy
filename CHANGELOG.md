@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/ShadyF/Actual-Budget-SMS-Proxy/compare/v1.1.0...v1.2.0) (2023-10-16)
+
+
+### Features
+
+* Support date inference if a "date" regex group is provided instead of "day", "month" and "year" ([08f4145](https://github.com/ShadyF/Actual-Budget-SMS-Proxy/commit/08f4145de944e44e21131cbc1100745f86660a94))
+
 # [1.1.0](https://github.com/ShadyF/Actual-Budget-SMS-Proxy/compare/v1.0.1...v1.1.0) (2023-10-14)
 
 
