@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/ShadyF/Actual-Budget-SMS-Proxy/compare/v1.0.1...v1.1.0) (2023-10-14)
+
+
+### Features
+
+* Support transfers between accounts ([afeb2b3](https://github.com/ShadyF/Actual-Budget-SMS-Proxy/commit/afeb2b3b8279d2ab6dfaf618ae865e8895aa5830))
+
 ## [1.0.1](https://github.com/ShadyF/Actual-Budget-SMS-Proxy/compare/v1.0.0...v1.0.1) (2023-10-14)
 
 
