@@ -45,7 +45,7 @@ export const parseSMS = (senderName: string, body: string, config: Record<string
             transaction = {
                 account: parser.account,
                 date: date,
-                amount: parseFloat(matches.groups?.amount),
+                amount: parseFloat(matches.groups?.amount.replace(/,/g, '')),
                 to_account: parser.to_account,
                 payee_name: matches.groups?.payee_name,
                 type: parser.type,
