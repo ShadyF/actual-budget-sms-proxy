@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/ShadyF/Actual-Budget-SMS-Proxy/compare/v1.2.1...v1.2.2) (2023-12-09)
+
+
+### Bug Fixes
+
+* **node_modules:** bump actual-budget/api to 6.3.0 ([9dfc58b](https://github.com/ShadyF/Actual-Budget-SMS-Proxy/commit/9dfc58bc404af9ea889ba94292fe39dc4a7d4fa8))
+
 ## [1.2.1](https://github.com/ShadyF/Actual-Budget-SMS-Proxy/compare/v1.2.0...v1.2.1) (2023-10-16)
 
 
