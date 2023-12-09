@@ -13,7 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@actual-app/api": "^6.2.1",
+    "@actual-app/api": "^6.3.0",
     "@godaddy/terminus": "^4.12.1",
     "ajv": "^8.12.0",
     "ajv-formats": "^2.1.1",
