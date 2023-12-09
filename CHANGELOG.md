@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/ShadyF/Actual-Budget-SMS-Proxy/compare/v1.2.0...v1.2.1) (2023-10-16)
+
+
+### Bug Fixes
+
+* **parser:** remove commas from amount group when parsing ([25e4b6b](https://github.com/ShadyF/Actual-Budget-SMS-Proxy/commit/25e4b6beb99093a3efb7bf015bfb8f8332a66cf9))
+
 # [1.2.0](https://github.com/ShadyF/Actual-Budget-SMS-Proxy/compare/v1.1.0...v1.2.0) (2023-10-16)
 
 
