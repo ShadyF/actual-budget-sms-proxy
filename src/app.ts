@@ -1,13 +1,13 @@
-import http from "http";
+import http from "http"
 import * as envalid from 'envalid'
 
-import {createTerminus} from "@godaddy/terminus";
-import fs from "fs";
-import * as actualAPI from "@actual-app/api";
-import express from "express";
-import axios from 'axios';
-import {parseSMS, TransactionData, TransactionParser} from "./parser";
-import {configValidator, payloadValidator} from "./validators";
+import {createTerminus} from "@godaddy/terminus"
+import fs from "fs"
+import * as actualAPI from "@actual-app/api"
+import express from "express"
+import axios from 'axios'
+import {parseSMS, TransactionData, TransactionParser} from "./parser"
+import {configValidator, payloadValidator} from "./validators"
 
 const actualBudgetDataDir = './budget-data'
 
