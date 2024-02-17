@@ -1,3 +1,10 @@
+## [1.2.4](https://github.com/ShadyF/Actual-Budget-SMS-Proxy/compare/v1.2.3...v1.2.4) (2024-02-17)
+
+
+### Bug Fixes
+
+* fix app not building due to missing typescript types ([8adf6c5](https://github.com/ShadyF/Actual-Budget-SMS-Proxy/commit/8adf6c5d92d6d11290935c52f16073cd450d2cc7))
+
 ## [1.2.3](https://github.com/ShadyF/Actual-Budget-SMS-Proxy/compare/v1.2.2...v1.2.3) (2024-02-17)
 
 
