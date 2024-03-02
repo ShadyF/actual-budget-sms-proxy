@@ -32,7 +32,7 @@ interface Account {
 const env = envalid.cleanEnv(process.env, {
     API_KEY: envalid.str(),
     SERVER_PORT: envalid.port({default: 8080}),
-    ACTUAL_SERVER_PROCTOCOL: envalid.str({choices: ["http", "https"], default: "https"}),
+    ACTUAL_SERVER_PROTOCOL: envalid.str({choices: ["http", "https"], default: "https"}),
     ACTUAL_SERVER_HOST: envalid.host(),
     ACTUAL_SERVER_PORT: envalid.port(),
     ACTUAL_SERVER_PASSWORD: envalid.str(),
@@ -68,9 +68,9 @@ if (!configValidator(config)) {
         // Budget data will be cached locally here, in subdirectories for each file.
         dataDir: actualBudgetDataDir,
         // This is the URL of your running server
-        serverURL: `${env.ACTUAL_SERVER_PROCTOCOL}://${env.ACTUAL_SERVER_HOST}:${env.ACTUAL_SERVER_PORT}`,
+        serverURL: `${env.ACTUAL_SERVER_PROTOCOL}://${env.ACTUAL_SERVER_HOST}:${env.ACTUAL_SERVER_PORT}`,
         // This is the password you use to log into the server
-        password: env.ACTUAL_SERVER_PASSWORD,
+        password: env.ACTUAL_SERVER_PASSWORD
     });
 
     // This is the ID from Settings → Show advanced settings → Sync ID
@@ -120,7 +120,8 @@ app.post('/transactions', async (req, res) => {
     if (transactionData.currency && transactionData.currency.toLowerCase() !== env.MAIN_CURRENCY) {
         for (const date of [transactionData.date, "latest"]) {
             try {
-                const currencyResponse = await axios.get(`https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/${date}/currencies/${transactionData.currency.toLowerCase()}/${env.MAIN_CURRENCY}.json`)
+                const currencyResponse = await axios.get(`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@${date}/v1/currencies/${transactionData.currency.toLowerCase()}.min.json`)
+                // const currencyResponse = await axios.get(`https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/${date}/currencies/${transactionData.currency.toLowerCase()}/${env.MAIN_CURRENCY}.json`)
                 const data = currencyResponse.data
                 // Calculated the amount in the main currency
                 const convertedAmount = data[env.MAIN_CURRENCY] * transactionData.amount * env.FOREIGN_CURRENCY_FACTOR
