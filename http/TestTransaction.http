@@ -1,3 +1,4 @@
+# Need to change sms_sender and sms according to the parsers you have set in config.json
 POST http://localhost:8080/transactions
 Content-Type: application/json
 

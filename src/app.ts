@@ -8,6 +8,7 @@ import express from "express"
 import axios from 'axios'
 import {parseSMS, TransactionData, TransactionParser} from "./parser"
 import {configValidator, payloadValidator} from "./validators"
+import currency from 'currency.js'
 
 const actualBudgetDataDir = './budget-data'
 
@@ -120,14 +121,16 @@ app.post('/transactions', async (req, res) => {
     if (transactionData.currency && transactionData.currency.toLowerCase() !== env.MAIN_CURRENCY) {
         for (const date of [transactionData.date, "latest"]) {
             try {
-                const currencyResponse = await axios.get(`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@${date}/v1/currencies/${transactionData.currency.toLowerCase()}.min.json`)
+                const currencyResponse = await axios.get(`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@${date}/v1/currencies/${transactionData.currency.toLowerCase()}.json`)
                 // const currencyResponse = await axios.get(`https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/${date}/currencies/${transactionData.currency.toLowerCase()}/${env.MAIN_CURRENCY}.json`)
                 const data = currencyResponse.data
                 // Calculated the amount in the main currency
-                const convertedAmount = data[env.MAIN_CURRENCY] * transactionData.amount * env.FOREIGN_CURRENCY_FACTOR
+                const fxRate = data[transactionData.currency.toLowerCase()][env.MAIN_CURRENCY]
+                const convertedAmount = fxRate * transactionData.amount * env.FOREIGN_CURRENCY_FACTOR
 
                 // Add a note of the original amount in the foreign currency
-                const foreignCurrencyString = `${transactionData.amount} ${transactionData.currency}`
+                // Use currency.js here to do accurate rounding of fxRate. Could have been a good idea to use it throughout the app but was too lazy to do that
+                const foreignCurrencyString = `${transactionData.amount} ${transactionData.currency} (${currency(fxRate, {precision: 2})} ${env.MAIN_CURRENCY.toUpperCase()} FX Rate)`
                 transactionData.notes = transactionData.notes ? `${transactionData.notes} - ${foreignCurrencyString}` : foreignCurrencyString
 
                 // Adjust the transaction amount to be in the main currency
