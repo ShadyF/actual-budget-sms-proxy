@@ -1,3 +1,10 @@
+## [1.2.5](https://github.com/ShadyF/Actual-Budget-SMS-Proxy/compare/v1.2.4...v1.2.5) (2024-03-02)
+
+
+### Bug Fixes
+
+* type in ACTUAL_SERVER_PROTOCOL (was ACTUAL_SERVER_PROCTOCOL) ([133f0e5](https://github.com/ShadyF/Actual-Budget-SMS-Proxy/commit/133f0e5721c5a205e7359165237e7644fe2c6918))
+
 ## [1.2.4](https://github.com/ShadyF/Actual-Budget-SMS-Proxy/compare/v1.2.3...v1.2.4) (2024-02-17)
 
 
