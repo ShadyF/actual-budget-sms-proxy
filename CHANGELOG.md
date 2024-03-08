@@ -1,3 +1,10 @@
+## [1.2.6](https://github.com/ShadyF/Actual-Budget-SMS-Proxy/compare/v1.2.5...v1.2.6) (2024-03-08)
+
+
+### Bug Fixes
+
+* fix foreign exchange not working by migrating to new foreign exchange repo (https://github.com/fawazahmed0/exchange-api) ([9c9952c](https://github.com/ShadyF/Actual-Budget-SMS-Proxy/commit/9c9952c5c727ecb13ef0a3626ea715ef03d60bac))
+
 ## [1.2.5](https://github.com/ShadyF/Actual-Budget-SMS-Proxy/compare/v1.2.4...v1.2.5) (2024-03-02)
 
 
