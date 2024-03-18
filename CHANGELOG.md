@@ -1,3 +1,12 @@
+# [1.3.0](https://github.com/ShadyF/actual-budget-sms-proxy/compare/v1.2.7...v1.3.0) (2024-03-18)
+
+
+### Features
+
+* **app:** FX Fee can now be defined per parser with a global default that can be optionally set (default is 10%) ([30c5d1e](https://github.com/ShadyF/actual-budget-sms-proxy/commit/30c5d1e4a6520d131f4d7f2ee7e68ab64d680800))
+* **app:** Support setting the account's currency to avoid un-necessary FX Fees being applied ([f33c1fb](https://github.com/ShadyF/actual-budget-sms-proxy/commit/f33c1fb607d8e3a50203d3a441450e843aacd51b))
+* **parser:** add auto_add_date key to support SMS bodies with no date information ([dc97566](https://github.com/ShadyF/actual-budget-sms-proxy/commit/dc9756614d749358d21e41a6d984591b39ccd87a))
+
 ## [1.2.7](https://github.com/ShadyF/actual-budget-sms-proxy/compare/v1.2.6...v1.2.7) (2024-03-08)
 
 
