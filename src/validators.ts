@@ -35,7 +35,8 @@ const configSchema: JSONSchemaType<Record<string, TransactionParser[]>> = {
                     "append_year_prefix": {type: "boolean"},
                     "cleared": {type: "boolean"},
                     "fx_fee_percent": {type: "number", nullable: true},
-                    "account_currency": {type: "string", nullable: true}
+                    "account_currency": {type: "string", nullable: true},
+                    "auto_add_date": {type: "boolean", nullable: true}
                 },
                 required: ['regex', 'account', "type", "append_year_prefix", "cleared"],
                 additionalProperties: false,
