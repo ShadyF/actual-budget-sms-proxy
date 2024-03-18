@@ -43,9 +43,8 @@ const env = envalid.cleanEnv(process.env, {
         default: "egp",
         desc: "Main currency to use. Will do currency conversion for any transactions that are not in the main currency. Should be a 3 letter lowercase value"
     }),
-    // TODO: Move this to be per account / parser not global
-    FOREIGN_CURRENCY_FACTOR: envalid.num({
-        default: 1.1,
+    FX_FEE_PERCENT: envalid.num({
+        default: 0.1,
         desc: "Factor for transactions that are not done in the MAIN_CURRENCY value. Default is 10%"
     }),
     NODE_ENV: envalid.str({choices: ['development', 'test', 'production', 'staging']}),
@@ -81,10 +80,13 @@ if (!configValidator(config)) {
     // Pull account IDs
     console.log("Pulling Account IDs...")
     accountsList = await actualAPI.getAccounts()
+
     // Pull account transfer ids
     console.log("Pulling Accounts Transfer IDs...")
     const payees: TransferAccount[] = await actualAPI.getPayees()
     transferAccountsList = payees.filter((payee) => payee.transfer_acct != null)
+
+    // All done!
     console.log("Initialization Done!")
 })();
 
@@ -122,11 +124,16 @@ app.post('/transactions', async (req, res) => {
         for (const date of [transactionData.date, "latest"]) {
             try {
                 const currencyResponse = await axios.get(`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@${date}/v1/currencies/${transactionData.currency.toLowerCase()}.json`)
-                // const currencyResponse = await axios.get(`https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/${date}/currencies/${transactionData.currency.toLowerCase()}/${env.MAIN_CURRENCY}.json`)
                 const data = currencyResponse.data
+
                 // Calculated the amount in the main currency
                 const fxRate = data[transactionData.currency.toLowerCase()][env.MAIN_CURRENCY]
-                const convertedAmount = fxRate * transactionData.amount * env.FOREIGN_CURRENCY_FACTOR
+
+                // Use default FX Fee if fx_fee key not found in config
+                const fxFeePercent = (transactionData.fx_fee_percent ? transactionData.fx_fee_percent : env.FX_FEE_PERCENT)
+
+                // Calculate the net amount in the MAIN_CURRENCY
+                const convertedAmount = fxRate * transactionData.amount * (1 + fxFeePercent)
 
                 // Add a note of the original amount in the foreign currency
                 // Use currency.js here to do accurate rounding of fxRate. Could have been a good idea to use it throughout the app but was too lazy to do that

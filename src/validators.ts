@@ -33,7 +33,8 @@ const configSchema: JSONSchemaType<Record<string, TransactionParser[]>> = {
                     "to_account": {type: "string", nullable: true},
                     "type": {type: "string", enum: ["inflow", "outflow"]},
                     "append_year_prefix": {type: "boolean"},
-                    "cleared": {type: "boolean"}
+                    "cleared": {type: "boolean"},
+                    "fx_fee_percent": {type: "number", nullable: true}
                 },
                 required: ['regex', 'account', "type", "append_year_prefix", "cleared"],
                 additionalProperties: false,

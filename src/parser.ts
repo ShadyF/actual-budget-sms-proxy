@@ -8,6 +8,7 @@ export interface TransactionData {
     cleared: boolean
     currency?: string
     notes?: string
+    fx_fee_percent?: number
 }
 
 export interface TransactionParser {
@@ -17,6 +18,7 @@ export interface TransactionParser {
     type: "inflow" | "outflow"
     append_year_prefix: boolean
     cleared: boolean
+    fx_fee_percent?: number
 }
 
 
@@ -52,6 +54,7 @@ export const parseSMS = (senderName: string, body: string, config: Record<string
                 cleared: parser.cleared,
                 currency: matches.groups?.currency,
                 notes: matches.groups?.notes,
+                fx_fee_percent: parser.fx_fee_percent
             }
             break;
         }
