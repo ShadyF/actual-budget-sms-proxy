@@ -119,18 +119,27 @@ app.post('/transactions', async (req, res) => {
         return res.sendStatus(400)
     }
 
-    // Convert foreign currency to main currency
+    // Calculates amount in MAIN_CURRENCY if transaction was made using another currency
     if (transactionData.currency && transactionData.currency.toLowerCase() !== env.MAIN_CURRENCY) {
         for (const date of [transactionData.date, "latest"]) {
             try {
                 const currencyResponse = await axios.get(`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@${date}/v1/currencies/${transactionData.currency.toLowerCase()}.json`)
                 const data = currencyResponse.data
 
-                // Calculated the amount in the main currency
+                // Retrieve exchange rate to MAIN_CURRENCY
                 const fxRate = data[transactionData.currency.toLowerCase()][env.MAIN_CURRENCY]
 
-                // Use default FX Fee if fx_fee key not found in config
-                const fxFeePercent = (transactionData.fx_fee_percent ? transactionData.fx_fee_percent : env.FX_FEE_PERCENT)
+                // Set FX Fee as 0. Will check if FX Fees apply
+                let fxFeePercent = 0
+
+                // Use MAIN_CURRENCY as the account currency if account_currency not set in config
+                const accountCurrency = transactionData.account_currency ? transactionData.account_currency : env.MAIN_CURRENCY
+
+                // Do not add a FX Fee if the transaction's currency is the same as the account's currency
+                if (transactionData.currency.toLowerCase() !== accountCurrency.toLowerCase()) {
+                    // Use default FX Fee if fx_fee key not found in config
+                    fxFeePercent = transactionData.fx_fee_percent ? transactionData.fx_fee_percent : env.FX_FEE_PERCENT
+                }
 
                 // Calculate the net amount in the MAIN_CURRENCY
                 const convertedAmount = fxRate * transactionData.amount * (1 + fxFeePercent)

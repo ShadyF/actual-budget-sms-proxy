@@ -9,6 +9,7 @@ export interface TransactionData {
     currency?: string
     notes?: string
     fx_fee_percent?: number
+    account_currency?: string
 }
 
 export interface TransactionParser {
@@ -19,6 +20,11 @@ export interface TransactionParser {
     append_year_prefix: boolean
     cleared: boolean
     fx_fee_percent?: number
+
+    // This does not override the global MAIN_CURRENCY. It's only used to check if FX Fees apply or not.
+    // Useful for accounts where the currency is NOT the MAIN_CURRENCY, but you don't want FX fees to apply when paying
+    // using the account's native currency. (USD Account
+    account_currency?: string
 }
 
 
@@ -54,7 +60,8 @@ export const parseSMS = (senderName: string, body: string, config: Record<string
                 cleared: parser.cleared,
                 currency: matches.groups?.currency,
                 notes: matches.groups?.notes,
-                fx_fee_percent: parser.fx_fee_percent
+                fx_fee_percent: parser.fx_fee_percent,
+                account_currency: parser.account_currency
             }
             break;
         }
