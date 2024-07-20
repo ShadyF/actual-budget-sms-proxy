@@ -177,6 +177,7 @@ app.post('/transactions', async (req, res) => {
     }
 
     // Run actual import of transaction
+    // Replace this with addTransactions? Will not handle duplicates then
     await actualAPI.importTransactions(accountId, [{
         date: transactionData.date,
         payee: toAccountId,
