@@ -168,7 +168,7 @@ app.post('/transactions', async (req, res) => {
     if (!accountId) {
         console.warn(`Could not find ID of account named ${transactionData.account}. Please make sure the account name in your config matches the account name in Actual Budget.`)
     }
-    let toAccountId = null
+    let toAccountId: string | undefined = undefined
     if (transactionData.to_account) {
         toAccountId = transferAccountsList.find((account) => account.name === transactionData?.to_account)?.id
         if (!toAccountId) {
