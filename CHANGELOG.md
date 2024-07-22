@@ -1,3 +1,10 @@
+## [1.3.3](https://github.com/ShadyF/actual-budget-sms-proxy/compare/v1.3.2...v1.3.3) (2024-07-22)
+
+
+### Bug Fixes
+
+* **ts:** fix build issues due to typescript ([5bf8c87](https://github.com/ShadyF/actual-budget-sms-proxy/commit/5bf8c8703ee3bae99e5124129d0d376df2d7ada6))
+
 ## [1.3.2](https://github.com/ShadyF/actual-budget-sms-proxy/compare/v1.3.1...v1.3.2) (2024-07-20)
 
 
