@@ -12,10 +12,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "skipLibCheck": true
   },
   "include": [
-    "src"
+    "./src"
   ],
   "lib": [
     "es2015"
