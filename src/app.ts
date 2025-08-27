@@ -59,7 +59,7 @@ if (!configValidator(config)) {
 
 
 // Initialize ActualAPI
-(async () => {
+export async function initializeApp() {
     if (!fs.existsSync(actualBudgetDataDir)) {
         fs.mkdirSync(actualBudgetDataDir);
     }
@@ -88,7 +88,7 @@ if (!configValidator(config)) {
 
     // All done!
     console.log("Initialization Done!")
-})();
+}
 
 
 export interface RequestPayload {
@@ -97,7 +97,7 @@ export interface RequestPayload {
     sms: string
 }
 
-const app = express()
+export const app = express()
 app.use(express.json());
 app.post('/transactions', async (req, res) => {
     if (!payloadValidator(req.body)) {
@@ -191,7 +191,7 @@ app.post('/transactions', async (req, res) => {
 })
 
 // Setting up the server
-const server = http.createServer(app)
+export const server = http.createServer(app)
 
 async function onSignal() {
     await actualAPI.shutdown()
@@ -207,4 +207,8 @@ createTerminus(server, {
     onSignal
 })
 
-server.listen(env.SERVER_PORT, () => console.log(`Starting Actual Budget Transactions Proxy Server on Port ${env.SERVER_PORT}`))
+if (process.env.NODE_ENV !== 'test') {
+    initializeApp().then(() => {
+        server.listen(env.SERVER_PORT, () => console.log(`Starting Actual Budget Transactions Proxy Server on Port ${env.SERVER_PORT}`))
+    });
+}
