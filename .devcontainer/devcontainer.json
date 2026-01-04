@@ -10,10 +10,12 @@
   ],
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "forwardPorts": [8080],
-
+  "updateRemoteUserUID": true, // This is already the default, but just in case.
   // Uninstall global eslint, install dependencies, and configure fish/starship
-  "postCreateCommand": "npm uninstall -g eslint  && npm install && mkdir -p ~/.config/fish && echo 'starship init fish | source' > ~/.config/fish/config.fish",
+  "postCreateCommand": "npm uninstall -g eslint && npm install && mkdir -p ~/.config/fish && echo 'fish_add_path $PWD/node_modules/.bin' > ~/.config/fish/config.fish && echo 'starship init fish | source' >> ~/.config/fish/config.fish",
 
+  "remoteUser": "node",
+  "containerUser": "node",
   // Configure tool-specific properties.
   "customizations": {
     "jetbrains": {
