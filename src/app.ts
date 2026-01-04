@@ -9,6 +9,7 @@ import axios from 'axios'
 import {parseSMS, TransactionData, TransactionParser} from "./parser"
 import {configValidator, payloadValidator} from "./validators"
 import currency from 'currency.js'
+import 'dotenv/config'
 
 const actualBudgetDataDir = './budget-data'
 
