@@ -1,4 +1,4 @@
-FROM node:20.7-bullseye-slim
+FROM node:22-bookworm-slim
 
 # Create app directory
 WORKDIR /usr/src/app
