@@ -8,7 +8,7 @@
     "ghcr.io/meaningful-ooo/devcontainer-features/fish:2": {}
   },
   "runArgs": [
-    "--add-host=host.docker.internal:host-gateway"
+    "--network=host"
   ],
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "forwardPorts": [8080],
