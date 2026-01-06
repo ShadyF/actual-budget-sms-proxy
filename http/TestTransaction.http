@@ -1,11 +1,26 @@
 # Need to change sms_sender and sms according to the parsers you have set in config.json
-POST http://localhost:8080/transactions
+POST http://localhost:8080/sms-transaction
 Content-Type: application/json
 
 {
-  "api_key": "random",
-  "sms_sender": "123",
-  "sms": "abc"
+  "api_key": "YOUR_API_KEY",
+  "sms_sender": "CIB",
+  "sms": "Your Credit Card ending with *** 1594 has been used for EGP 441.00 on 29/06/2025 at GEIDEA*GOURMET. Your available limit is EGP 1692.14"
+}
+
+###
+
+POST http://localhost:8080/transaction
+Content-Type: application/json
+
+{
+  "api_key": "YOUR_API_KEY",
+  "account": "CIB",
+  "date": "2026-01-06",
+  "amount": 441.00,
+  "type": "outflow",
+  "cleared": true,
+  "payee_name": "GEIDEA*GOURMET"
 }
 
 ###
