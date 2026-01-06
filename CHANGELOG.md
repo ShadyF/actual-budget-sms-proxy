@@ -1,3 +1,16 @@
+# [2.0.0](https://github.com/ShadyF/actual-budget-sms-proxy/compare/v1.3.20...v2.0.0) (2026-01-06)
+
+
+### Features
+
+* **app:** rename transactions endpoints to sms-transaction and create another transaction endpoint for parsed transactions ([f4e232f](https://github.com/ShadyF/actual-budget-sms-proxy/commit/f4e232f88ab3528d9ba28caf969ff68ad5a06993))
+* **app:** renamed endpoints to sms-transaction and transaction Shady Fanous 12 minutes ago ([6d44b3c](https://github.com/ShadyF/actual-budget-sms-proxy/commit/6d44b3c5fd875ae5f2dc5879ddfe25c5678f5cda))
+
+
+### BREAKING CHANGES
+
+* **app:** endpoints names have been changed
+
 ## [1.3.20](https://github.com/ShadyF/actual-budget-sms-proxy/compare/v1.3.19...v1.3.20) (2025-12-06)
 
 
