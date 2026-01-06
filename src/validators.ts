@@ -1,14 +1,14 @@
 // Compile AJV
 import Ajv, {JSONSchemaType} from "ajv"
-import {RequestPayload} from "./app";
+import {SMSRequestPayload, TransactionRequestPayload} from "./types/api";
+import {SMSParserRule} from "./types";
 import addFormats from "ajv-formats";
-import {TransactionParser} from "./parser";
 
 const ajv = new Ajv()
 addFormats(ajv, ["date", "uuid", "regex"])
 
 // JSON Schemas
-const payloadSchema: JSONSchemaType<RequestPayload> = {
+const smsPayloadSchema: JSONSchemaType<SMSRequestPayload> = {
     type: "object",
     properties: {
         api_key: {type: "string"},
@@ -19,7 +19,7 @@ const payloadSchema: JSONSchemaType<RequestPayload> = {
     additionalProperties: false
 }
 
-const configSchema: JSONSchemaType<Record<string, TransactionParser[]>> = {
+const configSchema: JSONSchemaType<Record<string, SMSParserRule[]>> = {
     type: "object",
     patternProperties: {
         "^.+$": {
@@ -48,5 +48,26 @@ const configSchema: JSONSchemaType<Record<string, TransactionParser[]>> = {
     minProperties: 1
 }
 
-export const payloadValidator = ajv.compile(payloadSchema)
+const apiTransactionPayloadSchema: JSONSchemaType<TransactionRequestPayload> = {
+    type: "object",
+    properties: {
+        api_key: {type: "string"},
+        account: {type: "string"},
+        date: {type: "string"},
+        amount: {type: "number"},
+        to_account: {type: "string", nullable: true},
+        payee_name: {type: "string", nullable: true},
+        type: {type: "string", enum: ["inflow", "outflow"]},
+        cleared: {type: "boolean"},
+        currency: {type: "string", nullable: true},
+        notes: {type: "string", nullable: true},
+        fx_fee_percent: {type: "number", nullable: true},
+        account_currency: {type: "string", nullable: true}
+    },
+    required: ["api_key", "account", "date", "amount", "type", "cleared"],
+    additionalProperties: false
+}
+
+export const smsPayloadValidator = ajv.compile(smsPayloadSchema)
 export const configValidator = ajv.compile(configSchema)
+export const apiTransactionPayloadValidator = ajv.compile(apiTransactionPayloadSchema)

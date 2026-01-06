@@ -1,57 +1,25 @@
-export interface TransactionData {
-    account: string
-    date: string
-    amount: number
-    to_account?: string
-    payee_name?: string
-    type: "inflow" | "outflow"
-    cleared: boolean
-    currency?: string
-    notes?: string
-    fx_fee_percent?: number
-    account_currency?: string
-}
+import {TransactionData, SMSParserRule} from "./types";
 
-export interface TransactionParser {
-    regex: string,
-    account: string
-    to_account?: string
-    type: "inflow" | "outflow"
-    append_year_prefix: boolean
-    cleared: boolean
-    fx_fee_percent?: number
-
-    // This does not override the global MAIN_CURRENCY. It's only used to check if FX Fees apply or not.
-    // Useful for accounts where the currency is NOT the MAIN_CURRENCY, but you don't want FX fees to apply when paying
-    // using the account's native currency. (USD Account
-    account_currency?: string
-
-    // Automatically adds today's date instead of parsing date from SMS
-    // Needed when body does not contain any date data
-    auto_add_date?: boolean
-}
-
-
-export const parseSMS = (senderName: string, body: string, config: Record<string, TransactionParser[]>): TransactionData => {
+export const parseSMS = (senderName: string, body: string, config: Record<string, SMSParserRule[]>): TransactionData => {
     if (!(senderName in config)) {
         // TODO: Replace this with a more meaningful type of error
         throw Error("Could not find SMS Sender in provided financial entities config.")
     }
 
-    const senderTParsers = config[senderName]
+    const senderParserRules = config[senderName]
 
     let transaction: TransactionData | null = null
-    for (const parser of senderTParsers) {
-        const matches = body.match(new RegExp(parser.regex, "i"))
+    for (const rule of senderParserRules) {
+        const matches = body.match(new RegExp(rule.regex, "i"))
         if (matches && matches.groups?.amount) {
             let date = ""
 
             // Check if auto_add_date flag is set. No need to match date from SMS body then.
-            if (parser.auto_add_date) {
+            if (rule.auto_add_date) {
                 date = new Date().toLocaleDateString('en-CA')
             } else {
                 if (matches.groups?.year && matches.groups?.day && matches.groups?.month) {
-                    date = `${parser.append_year_prefix ? "20" : ""}${matches.groups.year}-${matches.groups.month}-${matches.groups.day}`
+                    date = `${rule.append_year_prefix ? "20" : ""}${matches.groups.year}-${matches.groups.month}-${matches.groups.day}`
                 } else if (matches.groups?.date) {
                     date = new Date(matches.groups?.date).toLocaleDateString('en-CA')
                 } else {
@@ -60,17 +28,17 @@ export const parseSMS = (senderName: string, body: string, config: Record<string
             }
 
             transaction = {
-                account: parser.account,
+                account: rule.account,
                 date: date,
                 amount: parseFloat(matches.groups?.amount.replace(/,/g, '')),
-                to_account: parser.to_account,
+                to_account: rule.to_account,
                 payee_name: matches.groups?.payee_name,
-                type: parser.type,
-                cleared: parser.cleared,
+                type: rule.type,
+                cleared: rule.cleared,
                 currency: matches.groups?.currency,
                 notes: matches.groups?.notes,
-                fx_fee_percent: parser.fx_fee_percent,
-                account_currency: parser.account_currency
+                fx_fee_percent: rule.fx_fee_percent,
+                account_currency: rule.account_currency
             }
             break;
         }
