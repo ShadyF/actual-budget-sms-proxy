@@ -1,6 +1,6 @@
 {
-  "name": "Node.js 22 - Bookworm",
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:22-bookworm",
+  "name": "Node.js 24 - Trixie",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:24-trixie",
   "features": {
     "ghcr.io/meaningful-ooo/devcontainer-features/fish:2": {},
     "ghcr.io/schlich/devcontainer-features/starship:0": {}
@@ -9,11 +9,13 @@
     "--network=host"
   ],
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  "forwardPorts": [8080],
-  "updateRemoteUserUID": true, // This is already the default, but just in case.
+  "forwardPorts": [
+    8080
+  ],
+  "updateRemoteUserUID": true,
+  // This is already the default, but just in case.
   // Uninstall global eslint, install dependencies, and configure fish/starship
-  "postCreateCommand": "npm uninstall -g eslint && npm install && mkdir -p ~/.config/fish && echo 'fish_add_path $PWD/node_modules/.bin' > ~/.config/fish/config.fish && echo 'starship init fish | source' >> ~/.config/fish/config.fish",
-
+  "postCreateCommand": "npm uninstall -g eslint && npm install && mkdir -p ~/.config/fish && echo 'fish_add_path $PWD/node_modules/.bin' > ~/.config/fish/config.fish && echo 'if status is-interactive; starship init fish | source; end' >> ~/.config/fish/config.fish",
   "remoteUser": "node",
   "containerUser": "node",
   // Configure tool-specific properties.
@@ -21,7 +23,9 @@
     "jetbrains": {
       "backend": "WebStorm",
       "plugins": [
-        "com.jetbrains.plugins.webstorm.eslint"
+        "com.jetbrains.plugins.webstorm.eslint",
+        "com.intellij.ml.llm",
+        "org.jetbrains.junie"
       ]
     }
   },
