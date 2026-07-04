@@ -1,3 +1,11 @@
+## [2.0.3](https://github.com/ShadyF/actual-budget-sms-proxy/compare/v2.0.2...v2.0.3) (2026-07-04)
+
+
+### Bug Fixes
+
+* **packages:** bump @actual-app/api to 26.4.0 ([f8d421c](https://github.com/ShadyF/actual-budget-sms-proxy/commit/f8d421ca6dca067a02068ec30ec13bfb007966f4))
+* **packages:** bump @actual-app/api to 26.7.0 ([59c7645](https://github.com/ShadyF/actual-budget-sms-proxy/commit/59c76450022209f32347be1ab0dcca2c031fff54))
+
 ## [2.0.2](https://github.com/ShadyF/actual-budget-sms-proxy/compare/v2.0.1...v2.0.2) (2026-03-07)
 
 
